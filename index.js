@@ -10,46 +10,23 @@ async function asyncForEach(array, callback) {
 startPopulation(function(results, client){
    console.log(results)
    
-   let value = 4803;
+   let value = results.length;
    let i = 0;
    let bulks = [];
    while(true) {
-     if(i > value) {
-       let over = i % value;
-       console.log(over)
-       bulks[bulks.length - 1] = i - over
+     if(i + 50 > value) {
+       let over = value % i;
+       bulks.push(results.slice(i,i + over))
        break;
+     } else {
+        bulks.push(results.slice(i,i+49))
+       i += 50;
      }
-   
-     bulks.push(i+49)
-     i += 50; 
    }
-   console.log(bulks)
-
+   
    couchDB.createDatabase("moviedatabase").then(function () {
-      asyncForEach(results, async function (result) {
-       await couchDB.insert("moviedatabase", {
-            id: result.id,
-            title: result.title,
-            budget: result.budget,
-            genres: result.genres,
-            homepage: result.homepage,
-            keywords: result.keywords,
-            original_language: result.original_language,
-            original_title: result.original_title,
-            overview: result.overview,
-            popularity: result.popularity,
-            production_companies: result.production_companies,
-            production_countries: result.production_countries,
-            release_date: result.release_date,
-            revenue: result.revenue,
-            runtime: result.runtime,
-            spoken_languages: result.spoken_languages,
-            status: result.status,
-            tagline: result.tagline,
-            vote_average: result.vote_average,
-            vote_count: result.vote_count,
-          });
+       bulks.forEach(function(bulk){
+      couchDB.insert("moviedatabase", {bulk:bulk})
         })
     })
 })
