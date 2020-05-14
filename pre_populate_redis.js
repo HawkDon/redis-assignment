@@ -8,17 +8,21 @@ client.on("error", function (error) {
 });*/
 
 // Start population
-function startPopulation(cb){
-client.on("error", function (error) {
-  console.error(error);
-  console.error("No docker container with redis on port: 6379");
-});
+function startPopulation(cb) {
+  client.on("error", function (error) {
+    console.error(error);
+    console.error("No docker container with redis on port: 6379");
+  });
 
   converter.then((results) => {
-    var result = results.map(function(x){return ["hmset", "title:" + x.original_title, x]})
-    client.multi(result).exec(function(error,result){cb(results, client)});
-  });  
+    var result = results.map(function (x) {
+      return ["hmset", "title:" + x.original_title, x];
+    });
+    client.multi(result).exec(function (error, result) {
+      client.quit();
+      cb(results);
+    });
+  });
 }
 
 module.exports = startPopulation;
-

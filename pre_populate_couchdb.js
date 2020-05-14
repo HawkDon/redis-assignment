@@ -48,8 +48,8 @@ couch.createDatabase("moviedatabase").then(function () {
       couch.insert("moviedatabase", {
         id: result.id,
         title: result.title,
-        budget: result.budget,
-        genres: result.genres,
+        budget: result.budget, Movie
+        genres: result.genres, Genre
         homepage: result.homepage,
         keywords: result.keywords,
         original_language: result.original_language,
